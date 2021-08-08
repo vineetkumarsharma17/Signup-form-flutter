@@ -1,5 +1,5 @@
 # sign_up_email
-[alt text](https://github.com/vineetkumarsharma17/Signup-form-flutter/blob/master/home.jpg)
+![alt text](https://github.com/vineetkumarsharma17/Signup-form-flutter/blob/master/home.jpg)
 
 A new Flutter project.
 
