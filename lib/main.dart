@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                 child: OutlinedButton(
                   onPressed: check,
                     style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(Size.infinite),
+                      minimumSize: MaterialStateProperty.all(Size.fromWidth(325)),
                       backgroundColor: MaterialStateProperty.all(Colors.orange),
                       side: MaterialStateProperty.all(BorderSide.none)
                     ),
@@ -245,7 +245,18 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ],
-              )
+              ),
+              SizedBox(height: 20,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Already have an account"),
+                  Text(" Sign In",style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                  ),),
+                ],
+              ),
             ],
           )
         ),
