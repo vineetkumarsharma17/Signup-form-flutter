@@ -1,6 +1,24 @@
+import 'dart:ffi';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-void main(){
+import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sign_up_email/alertdilog.dart';
+import 'dart:convert';
+
+import 'package:sign_up_email/signIn.dart';
+void main() async{
+  try{
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    print("success");
+  }catch(e){
+    print("error found");
+    print(e);
+  }
   runApp(MyApp());
 }
 class MyApp extends StatelessWidget {
@@ -12,25 +30,66 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.orange,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.orange
+        ),
         backgroundColor: Colors.orange
       ),
-      home: HomePage(),
+      home: SignIn(),
     );
   }
 }
 class HomePage extends StatefulWidget {
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  final _auth=FirebaseAuth.instance;
+  final _firestore=FirebaseFirestore.instance;
   String gogle='assets/images/google.png';
+  String msg='Successfully Logged in!';
   String fb='assets/images/fb.png';
   String twiter='assets/images/twiter.png';
+  String? email1;
+  String? pass1;
+
   TextEditingController uname=new TextEditingController();
   TextEditingController email=new TextEditingController();
   TextEditingController pass=new TextEditingController();
   @override
+  Future signup() async
+  {
+    var data = {
+      'email': email.text,
+      'user_name': uname.text,
+      'password': pass.text,
+    };
+
+    var response = await http.post(
+        Uri.parse("https://indianfarmerbyvkwilson.000webhostapp.com/sign_up.php"),
+        body: json.encode(data));
+
+    // Getting Server response into variable.
+    var obj = jsonDecode(response.body);
+
+    // If the Response Message is Matched.
+    if (obj["result"] == 'S') {
+      Fluttertoast.showToast(
+          msg: msg,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 4,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+      print("Success");
+    } else  if (obj["result"] == 'F'){
+      print("Failed");
+    }
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.orange,
@@ -79,7 +138,12 @@ class _HomePageState extends State<HomePage> {
                   ]
                 ),
                 child: TextField(
-                  controller: email,
+                  onChanged: (value){
+                    setState(() {
+                      email1=value;
+                    });
+                  },
+                  //controller: email,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     icon: Icon(Icons.email),
@@ -87,32 +151,32 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20,),
-              Container(
-                height: 60,
-                alignment: Alignment.center,
-                padding: EdgeInsets.only(left: 20),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.orange,
-                    //border: Border.all(color: Colors.black,width: 1),
-                    boxShadow:[
-                      new BoxShadow(
-                          color: Colors.red,
-                          blurRadius: 8,
-                          offset: Offset.zero
-                      )
-                    ]
-                ),
-                child: TextField(
-                  controller: uname,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      icon: Icon(Icons.person),
-                      hintText: "Username"
-                  ),
-                ),
-              ),
+              // SizedBox(height: 20,),
+              // Container(
+              //   height: 60,
+              //   alignment: Alignment.center,
+              //   padding: EdgeInsets.only(left: 20),
+              //   decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(15),
+              //       color: Colors.orange,
+              //       //border: Border.all(color: Colors.black,width: 1),
+              //       boxShadow:[
+              //         new BoxShadow(
+              //             color: Colors.red,
+              //             blurRadius: 8,
+              //             offset: Offset.zero
+              //         )
+              //       ]
+              //   ),
+              //   child: TextField(
+              //     controller: uname,
+              //     decoration: InputDecoration(
+              //         border: InputBorder.none,
+              //         icon: Icon(Icons.person),
+              //         hintText: "Username"
+              //     ),
+              //   ),
+              // ),
               SizedBox(height: 20,),
               Container(
                 height: 60,
@@ -132,7 +196,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: TextField(
                   obscureText: true,
-                  controller: pass,
+                  onChanged: (value){
+                    setState(() {
+                      pass1=value;
+                    });
+                  },
+                  //controller: pass,
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       icon: Icon(Icons.lock),
@@ -158,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                     ]
                 ),
                 child: OutlinedButton(
-                  onPressed: check,
+                  onPressed: signupWithFirebase,
                     style: ButtonStyle(
                       minimumSize: MaterialStateProperty.all(Size.fromWidth(325)),
                       backgroundColor: MaterialStateProperty.all(Colors.orange),
@@ -267,7 +336,6 @@ class _HomePageState extends State<HomePage> {
     String e='Please enter a email.';
     String u='Please enter a username.';
     String p='Please enter a password.';
-    String msg='Successfully Logged in!';
     if(email.text=='')
       msg=e;
     else
@@ -275,25 +343,43 @@ class _HomePageState extends State<HomePage> {
       msg=u;
     else if(pass.text=='')
       msg=p;
-       Fluttertoast.showToast(
-          msg: msg,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 4,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
+
        if(msg=='Successfully Logged in!')
     {
-      uname.clear();
-      email.clear();
-      pass.clear();
+      signup();
+      // uname.clear();
+      // email.clear();
+      // pass.clear();
     }
     print("error");
      //  return("error");
      //  print("error");
 
+  }
+  void signupWithFirebase()async{
+      final newUser=await _auth.createUserWithEmailAndPassword(email: email1!, password: pass1!
+      ).then((SignedUser){
+        _firestore.collection("users").add(
+          {"email":email1,
+            "password":pass1
+          }
+        ).then((value) {
+          if (value != null) {
+            showMyDialog("Success", "You are registerd with us.Now you can log in", context);
+            // Navigator.push(
+            //     context, MaterialPageRoute(builder: (context) => SignIn()));
+          }
+        }
+          ).catchError((e){
+            print("error found");
+            print(e);
+            showMyDialog("Error", e.toString(), context);
+        });
+      }).catchError((e){
+        print("error found");
+        print(e);
+        showMyDialog("Error", e.toString(), context);
+      });
   }
 }
 

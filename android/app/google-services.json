@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "345406908314",
+    "project_id": "demoflutter-cabed",
+    "storage_bucket": "demoflutter-cabed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345406908314:android:91ba6e537bb1ba706dfc23",
+        "android_client_info": {
+          "package_name": "com.example.sign_up_email"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "345406908314-g3vhf7adisukvd5u6ec2evmfsm77oat5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sign_up_email",
+            "certificate_hash": "10057adfb5860dcfa5160e41fa1f96e60abd078e"
+          }
+        },
+        {
+          "client_id": "345406908314-ogmborkujukp4up4u8g8l7m5ehud1a2e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBWJFi6l7lIjk7hD2baDupjUwPnITgP2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "345406908314-ogmborkujukp4up4u8g8l7m5ehud1a2e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
